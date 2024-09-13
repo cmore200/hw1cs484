@@ -68,18 +68,22 @@ export const start_server = () => {
   app.post("/delete", async (c) => {
     const body = await c.req.parseBody();
     const { productID } = body;
-
+  
     if (!productID) {
       return c.redirect("/?error=Product ID is required");
     }
-
-    const result = await db.delete(product).where(eq(product.id, productID));
-
+  
+    const result = await db.update(product)
+      .set({ deleted: 1 })
+      .where(eq(product.id, productID));
+  
     if (result === 0) {
       return c.redirect("/?error=Product not found");
     }
+  
     return c.redirect("/?success=Product deleted successfully");
-  }); 
+  });
+  
 
   // Create a new product
   app.post("/add", async (c) => {
